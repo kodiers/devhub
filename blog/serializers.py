@@ -6,26 +6,46 @@ from .models import Blog, Post, SubscriptionsList
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    User serializer
+    """
     class Meta:
         model = User
         fields = ("pk", "username", "email")
 
 
 class BlogSerializer(serializers.ModelSerializer):
+    """
+    Blog serializer
+    """
     class Meta:
         model = Blog
 
 
 class PostSerializer(serializers.ModelSerializer):
+    """
+    Post model serializer
+    """
     read = serializers.SerializerMethodField()
+    blog = BlogSerializer(read_only=True)
 
     def get_read(self, obj):
+        """
+        If user in post.users_read return true
+        :param obj: Post objects
+        :return: bool
+        """
         if self.context['request'].user.is_authenticated():
             if self.context['request'].user in obj.users_read.all():
                 return True
         return False
 
     def create(self, validated_data):
+        """
+        Create post
+        :param validated_data: dict
+        :return: Post
+        """
         post = Post()
         post.title = validated_data.pop('title')
         post.content = validated_data.pop('content')
@@ -39,6 +59,9 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionsListSerializer(serializers.ModelSerializer):
+    """
+    Subscription serializer
+    """
     class Meta:
         model = SubscriptionsList
 

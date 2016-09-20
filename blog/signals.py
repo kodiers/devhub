@@ -7,6 +7,9 @@ from .tasks import send_email_task
 
 @receiver(post_save, sender=Post, dispatch_uid='created_post')
 def created_post(sender, instance, created, *args, **kwargs):
+    """
+    Send email to subscribers, than post created
+    """
     if created:
         subscrbers = instance.blog.subscribers.all()
         if subscrbers.exists():

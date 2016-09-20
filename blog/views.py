@@ -1,28 +1,36 @@
-from django.shortcuts import render
-from django.contrib.auth.models import User
-
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework import status
 
-from .models import Blog, SubscriptionsList, Post
-from .serializers import BlogSerializer, PostSerializer, SubscriptionsListSerializer, UserSerializer
+from .models import Blog, Post
+from .serializers import BlogSerializer, PostSerializer
 
 # Create your views here.
 
 
 class BlogListAPIView(generics.ListAPIView):
+    """
+    Get all blogs
+    """
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = BlogSerializer
     queryset = Blog.objects.all()
 
 
 class PostListAPIView(APIView):
+    """
+    Get all posts in blog
+    """
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request, pk):
+        """
+        :param request: HttpRequest
+        :param pk: int Blog.pk
+        :return: HttpResponse (json)
+        """
         context = {'request': request}
         try:
             blog = Blog.objects.get(pk=pk)
@@ -34,6 +42,9 @@ class PostListAPIView(APIView):
 
 
 class UserPostListAPIView(generics.ListAPIView):
+    """
+    Get post in user subscription list
+    """
     permission_classes = (IsAuthenticated, )
     serializer_class = PostSerializer
     queryset = Post.objects.all()
@@ -45,18 +56,27 @@ class UserPostListAPIView(generics.ListAPIView):
 
 
 class PostAPIView(generics.RetrieveAPIView):
+    """
+    Get one post
+    """
     permission_classes = (IsAuthenticated,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
 
 
 class PostCreateAPIView(generics.CreateAPIView):
+    """
+    Create post
+    """
     permission_classes = (IsAuthenticated,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
 
 
 class SetPostReadAPIView(generics.UpdateAPIView, generics.DestroyAPIView):
+    """
+    Add/remove user to post.users_read
+    """
     permission_classes = (IsAuthenticated, )
     serializer_class = PostSerializer
     queryset = Post.objects.all()
@@ -75,6 +95,9 @@ class SetPostReadAPIView(generics.UpdateAPIView, generics.DestroyAPIView):
 
 
 class AddDelSubscrptionAPIView(generics.UpdateAPIView, generics.DestroyAPIView):
+    """
+    Add/remove blog to user subscription list
+    """
     permission_classes = (IsAuthenticated,)
     serializer_class = BlogSerializer
     queryset = Blog.objects.all()
