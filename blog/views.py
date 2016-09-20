@@ -23,12 +23,13 @@ class PostListAPIView(APIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request, pk):
+        context = {'request': request}
         try:
             blog = Blog.objects.get(pk=pk)
         except Blog.DoesNotExist:
             return Response(data={"error": "blog not found"}, status=status.HTTP_404_NOT_FOUND)
         posts = blog.posts.all()
-        serializer = PostSerializer(posts, many=True)
+        serializer = PostSerializer(posts, many=True, context=context)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -59,7 +60,6 @@ class SetPostReadAPIView(generics.UpdateAPIView, generics.DestroyAPIView):
     permission_classes = (IsAuthenticated, )
     serializer_class = PostSerializer
     queryset = Post.objects.all()
-    # http_method_names = ['PUT', 'DELETE']
 
     def put(self, request, *args, **kwargs):
         context = {'request': request}
@@ -78,7 +78,6 @@ class AddDelSubscrptionAPIView(generics.UpdateAPIView, generics.DestroyAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = BlogSerializer
     queryset = Blog.objects.all()
-    http_method_names = ['PUT', 'DELETE']
 
     def put(self, request, *args, **kwargs):
         blog = self.get_object()

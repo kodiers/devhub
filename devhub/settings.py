@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'kombu.transport.django',
+    'djcelery',
     'blog',
     'django.contrib.admin',
     'rest_framework',
