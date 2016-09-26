@@ -35,9 +35,7 @@ class PostSerializer(serializers.ModelSerializer):
         :param obj: Post objects
         :return: bool
         """
-        if obj.users_read.filter(pk=self.context['request'].user.pk).exists():
-            return True
-        return False
+        return obj.users_read.filter(pk=self.context['request'].user.pk).exists()
 
     def create(self, validated_data):
         """
