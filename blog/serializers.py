@@ -35,9 +35,8 @@ class PostSerializer(serializers.ModelSerializer):
         :param obj: Post objects
         :return: bool
         """
-        if self.context['request'].user.is_authenticated():
-            if self.context['request'].user in obj.users_read.all():
-                return True
+        if obj.users_read.filter(pk=self.context['request'].user.pk).exists():
+            return True
         return False
 
     def create(self, validated_data):
