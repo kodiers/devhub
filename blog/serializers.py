@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.models import User
 
 from rest_framework import serializers
@@ -35,7 +36,11 @@ class PostSerializer(serializers.ModelSerializer):
         :param obj: Post objects
         :return: bool
         """
-        return obj.users_read.filter(pk=self.context['request'].user.pk).exists()
+        if 'read' in self.context['request'].session:
+            read_values = json.loads(self.context['request'].session['read'])
+            if obj.pk in read_values:
+                return True
+        return False
 
     def create(self, validated_data):
         """

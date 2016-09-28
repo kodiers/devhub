@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -51,4 +52,4 @@ class BlogTestCase(TestCase):
     def test_as_read(self):
         self.client.login(username='user2', password='p@ssw0rd')
         response = self.client.put('/blog/post/read/' + str(self.post.pk) +'/')
-        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'true')

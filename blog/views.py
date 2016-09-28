@@ -1,3 +1,4 @@
+import json
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -84,13 +85,19 @@ class SetPostReadAPIView(generics.UpdateAPIView, generics.DestroyAPIView):
     def put(self, request, *args, **kwargs):
         context = {'request': request}
         post = self.get_object()
-        post.users_read.add(request.user)
+        if 'read' in request.session:
+            read_values = json.loads(request.session['read'])
+        else:
+            read_values = list()
+        read_values.append(post.pk)
+        request.session['read'] = json.dumps(read_values)
         return Response(PostSerializer(post, context=context).data, status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
         context = {'request': request}
         post = self.get_object()
-        post.users_read.remove(request.user)
+        if 'read' in request.session:
+            del request.session['read']
         return Response(PostSerializer(post, context=context).data, status=status.HTTP_200_OK)
 
 
